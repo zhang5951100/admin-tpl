@@ -10,7 +10,7 @@ import java.util.List;
 
 @Data
 @Entity(name = "SYS_ROLE")
-public class SysRole implements GrantedAuthority, Serializable {
+public class SysRole implements Serializable {
 
     private static final long serialVersionUID = -1834111111498772935L;
 
@@ -31,8 +31,4 @@ public class SysRole implements GrantedAuthority, Serializable {
             joinColumns = {@JoinColumn(name = "SYS_ROLE_ID")},
             inverseJoinColumns={@JoinColumn(name = "SYS_PERMISSION_ID")})
     private List<SysPermission> permissions;
-    @Override
-    public String getAuthority() {
-        return name;
-    }
 }

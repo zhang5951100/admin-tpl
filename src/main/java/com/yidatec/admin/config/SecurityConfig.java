@@ -1,5 +1,6 @@
 package com.yidatec.admin.config;
 
+import com.yidatec.admin.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +28,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * 通过 实现UserDetailService 来进行验证
      */
     @Autowired
-    private MyCustomUserService myCustomUserService;
+    private SysUserService sysUserService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -36,33 +37,35 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(myCustomUserService);
+        auth.userDetailsService(sysUserService);
     }
 
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception {
-//        http.formLogin()
-//                // 定义当需要用户登录时候，转到的登录页面。
-//                // 设置登录页面
-//                .loginPage("/login")
-//                // 登录成功后的访问路径
-//                .defaultSuccessUrl("/admin")
-//                .failureUrl("/login-error")
-//                .and()
-//                // 定义哪些URL需要被保护、哪些不需要被保护
-//                .authorizeRequests()
-//                // 设置所有人都可以访问登录页面
-////                .antMatchers("/login","/login-error").permitAll()
-////                .antMatchers("/order-list").hasRole("ADMIN")
-//                // 任何请求,登录后可以访问
-//                .anyRequest()
-//                .authenticated()
-//                .and()
-//                .headers().frameOptions().disable()
-//                .and()
-//                // 关闭csrf防护
-//                .csrf().disable();
-//    }
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.formLogin()
+                // 定义当需要用户登录时候，转到的登录页面。
+                // 设置登录页面
+                .loginPage("/login")
+                // 登录成功后的访问路径
+                .defaultSuccessUrl("/")
+                .failureUrl("/login-error")
+                .and()
+                .logout().logoutSuccessUrl("/login")
+                .and()
+                // 定义哪些URL需要被保护、哪些不需要被保护
+                .authorizeRequests()
+                // 设置所有人都可以访问登录页面
+                .antMatchers("/login","/login-error").permitAll()
+                .antMatchers("/order-list").hasAnyAuthority("ADMIN")
+                // 任何请求,登录后可以访问
+                .anyRequest()
+                .authenticated()
+                .and()
+                .headers().frameOptions().disable()
+                .and()
+                // 关闭csrf防护
+                .csrf().disable();
+    }
 
 
     /**
@@ -73,21 +76,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * @param http
      * @throws Exception
      */
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/","index","/login","/css/**","/js/**")//允许访问
-                .permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .loginPage("/login")//拦截后get请求跳转的页面
-                .defaultSuccessUrl("/admin")
-                .permitAll()
-                .and()
-                .logout()
-                .permitAll();
-    }
+//    @Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//        http.authorizeRequests()
+//                .antMatchers("/","index","/login","/css/**","/js/**")//允许访问
+//                .permitAll()
+//                .anyRequest().authenticated()
+//                .and()
+//                .formLogin()
+//                .loginPage("/login")//拦截后get请求跳转的页面
+//                .defaultSuccessUrl("/admin")
+//                .permitAll()
+//                .and()
+//                .logout()
+//                .permitAll();
+//    }
 
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -98,7 +101,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
          * 配置成web.ignoring().antMatchers("/static/*");这样是不起作用的
          */
 
-        web.ignoring().antMatchers("/css/**", "/fonts/**","/images/**","/js/**","/layui/**");
+        web.ignoring().antMatchers("/css/**", "/fonts/**","/images/**","/js/**","/AdminLTE-2.4/**");
 
     }
 

@@ -7,8 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Data
 @Entity(name = "SYS_USER")
@@ -41,7 +40,16 @@ public class SysUser implements UserDetails, Serializable {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return sysRoles;
+        List<SysPermission> sysPermissions = new ArrayList<>();
+
+        sysRoles.forEach(r -> sysPermissions.addAll(r.getPermissions()));
+
+        LinkedHashSet<SysPermission> set = new LinkedHashSet<>(sysPermissions.size());
+        set.addAll(sysPermissions);
+        sysPermissions.clear();
+        sysPermissions.addAll(set);
+
+        return sysPermissions;
     }
 
     @Override

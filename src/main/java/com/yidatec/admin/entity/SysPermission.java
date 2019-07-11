@@ -2,6 +2,7 @@ package com.yidatec.admin.entity;
 
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,7 +12,7 @@ import java.io.Serializable;
 
 @Data
 @Entity(name = "SYS_PERMISSION")
-public class SysPermission implements Serializable {
+public class SysPermission implements GrantedAuthority, Serializable {
     private static final long serialVersionUID = 4564404809812171792L;
 
     @Id
@@ -20,15 +21,14 @@ public class SysPermission implements Serializable {
     @Column(name = "ID")
     private String id;
 
-    @Column(name = "PID")
-    private String pid;
-
     @Column(name = "NAME")
     private String name;
 
-    @Column(name = "URL")
-    private String url;
-
     @Column(name = "DESCRIPTION")
     private String description;
+
+    @Override
+    public String getAuthority() {
+        return name;
+    }
 }
